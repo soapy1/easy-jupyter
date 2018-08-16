@@ -1,0 +1,34 @@
+- name: 'setup dev env'
+  hosts:
+    - all
+  tasks:
+    - name: copy ssh file
+      copy:
+        src: dev
+        dest: /home/ubuntu/.ssh/dev
+        mode: 0400
+    - name: clone repo
+      shell: ssh-agent bash -c 'ssh-add /home/ubuntu/.ssh/dev; cd /home/ubuntu/; git clone git@github.com:RaunaqSuri/clickbait-detector.git'
+    - name: install missing packages
+      shell: /home/ubuntu/miniconda3/bin/conda install -y gensim nltk
+    - name: copy jupyter config
+      copy:
+        src: jupyter_notebook_config.py
+        dest: /home/ubuntu/.jupyter/jupyter_notebook_config.py
+    - name: copy download features script
+      copy:
+        src: download_features.sh
+        dest: /home/ubuntu/clickbait-detector/download_features.sh
+        mode: 755
+    - name: install deps
+      become: yes
+      apt:
+        name: unzip
+    - name: execute download features
+      become: yes
+      command: /bin/bash /home/ubuntu/clickbait-detector/download_features.sh
+      args:
+        chdir: /home/ubuntu/clickbait-detector
+    - name: chown download_features
+      become: yes
+      command: chown ubuntu:ubuntu /home/ubuntu/clickbait-detector/features

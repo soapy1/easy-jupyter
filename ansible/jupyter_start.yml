@@ -1,0 +1,10 @@
+- name: 'start jupyter'
+  hosts:
+    - all
+  tasks:
+    - name: start jupyter
+      # shell: start-stop-daemon --start --quiet --pidfile /var/run/test --exec /home/ubuntu/miniconda3/bin/jupyter notebook
+      shell: screen -dmS test bash -c 'echo waiting 5 senconds...; sleep 5; exec /home/ubuntu/miniconda3/bin/jupyter notebook'
+      args:
+        chdir: /home/ubuntu/clickbait-detector
+        executable: /bin/bash
